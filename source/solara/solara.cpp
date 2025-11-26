@@ -54,7 +54,14 @@ namespace solara {
     void init(const Settings& settings) {
         std::cout << "SOLARA: " << settings.input_file << " outputing to " << settings.output_file << std::endl;
 
+        std::string source = "//dawda\n{na = b +----++ 10.000}\0";
 
+        lexer::Lexer lexer(source);
+
+        while (lexer.is_valid()) {
+            auto lexeme = lexer.get_next_token();
+            lexeme.print();
+        }
     }
 
 } /* solara */
