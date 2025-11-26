@@ -42,3 +42,5 @@
 
 # solara
 binaries/
+build/
+intermediate/

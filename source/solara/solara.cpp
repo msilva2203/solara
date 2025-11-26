@@ -7,12 +7,13 @@
 
 #include "solara.h"
 #include "lexer.h"
+#include "stringtable.h"
 
 #include <iostream>
 
 namespace solara {
 
-    void parse_settings(i32 argc, char* argv[], Settings& out_settings) {
+    void parse_settings(i32 argc, char* argv[], CompilerSettings& out_settings) {
         enum class ParseState {
             None = 0,
             InputFile,
@@ -40,23 +41,24 @@ namespace solara {
 
             switch (parse_state) {
                 case ParseState::InputFile:
-                out_settings.input_file = arg;
-                break;
+                    out_settings.input_file = arg;
+                    break;
                 case ParseState::OutputFile:
-                out_settings.output_file = arg;
-                break;
+                    out_settings.output_file = arg;
+                    break;
                 default:
-                break;
+                    break;
             }
         }
     }
 
-    void init(const Settings& settings) {
+    void init(const CompilerSettings& settings) {
+        CompilerContext ctx;
+        ctx.settings = settings;
+
         std::cout << "SOLARA: " << settings.input_file << " outputing to " << settings.output_file << std::endl;
 
-        std::string source = "//dawda\n{na = b +----++ 10.000}\0";
-
-        lexer::Lexer lexer(source);
+        solara::Lexer lexer(&ctx, settings.input_file);
 
         while (lexer.is_valid()) {
             auto lexeme = lexer.get_next_token();

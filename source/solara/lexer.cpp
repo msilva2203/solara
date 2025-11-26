@@ -5,8 +5,9 @@
 #include "lexer.h"
 
 #include <iostream>
+#include <fstream>
 
-namespace lexer {
+namespace solara {
 
     static bool is_newline(const char c) {
         return c == '\n';
@@ -44,44 +45,27 @@ namespace lexer {
         return c == ' ' || c == '\t' || c == '\r' || is_newline(c) || c == '\0';
     }
 
-    void TokenLexeme::print() {
-        switch (type) {
-            case TokenType::PLUS: {
-                std::cout << "PLUS" << std::endl;
-                break;
-            }
-            case TokenType::MINUS: {
-                std::cout << "MINUS" << std::endl;
-                break;
-            }
-            case TokenType::DEC: {
-                std::cout << "DEC" << std::endl;
-                break;
-            }
-            case TokenType::INC: {
-                std::cout << "INC" << std::endl;
-                break;
-            }
-            case TokenType::LBRACE: {
-                std::cout << "LBRACE" << std::endl;
-                break;
-            }
-            case TokenType::RBRACE: {
-                std::cout << "RBRACE" << std::endl;
-                break;
-            }
-            default: {
-                std::cout << "OTHER" << std::endl;
-                break;
-            }
-        }
-    }
-
-    Lexer::Lexer(const std::string& in_source) {
-        source = in_source;
+    Lexer::Lexer(CompilerContext* in_ctx, const std::filesystem::path& path) {
+        ctx = in_ctx;
         index = 0;
         column = 0;
         line = 0;
+
+        if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+            std::ifstream file(path);
+            
+            if (!file.is_open()) {
+                std::cout << "Error: Could not open source file: " << path << std::endl;
+                return;
+            }
+
+            source.assign(
+                std::istreambuf_iterator<char>(file),
+                std::istreambuf_iterator<char>()
+            );
+        } else {
+            std::cout << "Error: Source file does not exist: " << path << std::endl;
+        }
     }
 
     TokenLexeme Lexer::get_next_token() {
@@ -102,13 +86,11 @@ namespace lexer {
         // clear and handle white spaces
         while (is_white_space(c)) {
             index++;
-
             if (c == '\0') {
                 return token;
             } else if (c == '\n') {
                 newline();
             }
-
             c = peek(0);
         }
 
@@ -120,9 +102,7 @@ namespace lexer {
                 i++;
                 c = peek(i);
             }
-            std::cout << "Generated identifier / keyword with length: " << i << std::endl;
-            index += i;
-            return token;
+            return create_token(TokenType::IDENTIFIER, i);
         }
 
         // generate number literals
@@ -200,10 +180,7 @@ namespace lexer {
                 i++;
                 c = peek(i);
             }
-
-            std::cout << "might have detected a number of length: " << i << std::endl;
-            index += i - 1;
-            return token;
+            return create_token(TokenType::LIT_INT, i - 1);
         }
 
         if (c == '/') {
@@ -374,6 +351,7 @@ namespace lexer {
         }
 
         index++;
+        column++;
 
         return token;
     }
@@ -394,8 +372,19 @@ namespace lexer {
     TokenLexeme Lexer::create_token(const TokenType type, u64 length) {
         TokenLexeme token;
         token.type = type;
+        token.span.line = line;
+        token.span.column = column;
+
+        if (token_has_value(type)) {
+            const u64 begin = index;
+            const std::string_view view = source;
+            const std::string_view token_literal = view.substr(begin, length);
+            const u64 tok_lit_id = ctx->string_table.add(token_literal);
+            token.literal_id = tok_lit_id;
+        }
 
         index += length;
+        column += length;
 
         return token;
     }
@@ -405,4 +394,4 @@ namespace lexer {
         column = 0;
     }
 
-} /* lexer */
+} /* solara */

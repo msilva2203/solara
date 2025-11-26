@@ -8,24 +8,30 @@
 #pragma once
 
 #include "common.h"
+#include "stringtable.h"
 
 #include <string>
 
 namespace solara {
 
-    struct Settings {
+    struct CompilerSettings {
         std::string input_file = "";
         std::string output_file = "";
+    };
+
+    struct CompilerContext {
+        CompilerSettings settings;
+        StringTable string_table;
     };
 
     /**
      * 
      */
-    void parse_settings(i32 argc, char* argv[], Settings& out_settings);
+    void parse_settings(i32 argc, char* argv[], CompilerSettings& out_settings);
 
     /**
      * 
      */
-    void init(const Settings& settings);
+    void init(const CompilerSettings& settings);
 
 } /* solara */

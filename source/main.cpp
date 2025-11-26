@@ -8,12 +8,8 @@
 #include "solara/solara.h"
 
 int main(int argc, char* argv[]) {
-    // parse arguments
-    solara::Settings settings;
+    solara::CompilerSettings settings;
     solara::parse_settings(argc, argv, settings);
-
-    // init solara compiler
     solara::init(settings);
-
     return 0;
 }
