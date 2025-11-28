@@ -2,7 +2,8 @@
  * @file main.sol
  */
 
-pub fn main() : i32
-{
-    var = 10 + 0.10;
+pub module main;
+
+pub fn main() : i32 {
+    var : f32 = 10 + 0.10;
 }

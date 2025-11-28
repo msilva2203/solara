@@ -5,6 +5,7 @@
 #pragma once
 
 #include <cinttypes>
+#include <assert.h>
 
 // signed types
 typedef int8_t      i08;

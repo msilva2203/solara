@@ -45,11 +45,15 @@ namespace solara {
         return c == ' ' || c == '\t' || c == '\r' || is_newline(c) || c == '\0';
     }
 
-    Lexer::Lexer(CompilerContext* in_ctx, const std::filesystem::path& path) {
-        ctx = in_ctx;
-        index = 0;
-        column = 0;
-        line = 0;
+    Lexer::Lexer(CompilerContext* ctx) {
+        assert(ctx != nullptr);
+        ctx_ = ctx;
+    }
+
+    void Lexer::init(const std::filesystem::path& path) {
+        pos_ = 0;
+        line_ = 0;
+        column_ = 0;
 
         if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
             std::ifstream file(path);
@@ -59,7 +63,7 @@ namespace solara {
                 return;
             }
 
-            source.assign(
+            source_.assign(
                 std::istreambuf_iterator<char>(file),
                 std::istreambuf_iterator<char>()
             );
@@ -68,27 +72,39 @@ namespace solara {
         }
     }
 
-    TokenLexeme Lexer::get_next_token() {
-        enum class ParseState {
-            None = 0,
-            SingleLineComment,
-            MultiLineComment,
-            StringLiteral
-        };
-
-        ParseState parse_state = ParseState::None;
-
+    TokenLexeme Lexer::next_token() {
         TokenLexeme token;
-        token.type = TokenType::NONE;
+        token = tokenize();
+        while (token.type == TokenType::NONE) {
+            token = tokenize();
+        }
+        return token;
+    }
+
+    char Lexer::peek(const u32 offset) const {
+        const size_t s = source_.size();
+        const u64 i = pos_ + offset;
+        if (i < s) {
+            return source_.at(i);
+        }
+        return '\0';
+    }
+
+    bool Lexer::has_next(const u32 offset) const {
+        return (pos_ + offset) < source_.size();
+    }
+
+    TokenLexeme Lexer::tokenize() {
+        if (!has_next()) {
+            return create_end_token();
+        }
 
         char c = peek(0);
 
         // clear and handle white spaces
         while (is_white_space(c)) {
-            index++;
-            if (c == '\0') {
-                return token;
-            } else if (c == '\n') {
+            pos_++;
+            if (c == '\n') {
                 newline();
             }
             c = peek(0);
@@ -102,16 +118,16 @@ namespace solara {
                 i++;
                 c = peek(i);
             }
-            return create_token(TokenType::IDENTIFIER, i);
+            return create_keyword_token(i);
         }
 
         // generate number literals
         if (is_unicode_digit(c) || c == '.') {
             enum {
-                FlagDecimal = 1 << 0,
-                FlagOctal = 1 << 1,
-                FlagHexadecimal = 1 << 2,
-                FlagFloatingPoint = 1 << 3
+                FlagDecimal         = 1 << 0,
+                FlagOctal           = 1 << 1,
+                FlagHexadecimal     = 1 << 2,
+                FlagFloatingPoint   = 1 << 3
             };
 
             u08 flags = 0;
@@ -188,22 +204,13 @@ namespace solara {
             if (c == '=') {
                 return create_token(TokenType::DIV_ASSIGN, 2);
             } else if (c == '/') {
-                // TODO: single line comment
-                u64 i = 2;
-                c = peek(i);
-                while (!is_newline(c)) {
-                    if (c == '\0') {
-                        index += i;
-                        return token;
-                    }
-                    i++;
-                    c = peek(i);
-                }
-                index += i;
-                return get_next_token();
+                pos_ += 2;
+                consume_singleline_comment();
+                return create_invalid_token();
             } else if (c == '*') {
-                // TODO: multi line comment
-                
+                pos_ += 2;
+                consume_multiline_comment();
+                return create_invalid_token();
             } else {
                 return create_token(TokenType::DIV, 1);
             }
@@ -346,52 +353,97 @@ namespace solara {
         if (c == '.') {
             return create_token(TokenType::PERIOD, 1);
         }
+        if (c == ':') {
+            return create_token(TokenType::COLON, 1);
+        }
         if (c == ';') {
             return create_token(TokenType::SEMICOLON, 1);
         }
 
-        index++;
-        column++;
+        pos_++;
+        column_++;
 
-        return token;
-    }
-
-    char Lexer::peek(u64 offset) const {
-        const size_t s = source.size();
-        const u64 i = index + offset;
-        if (i < s) {
-            return source.at(i);
-        }
-        return '\0';
-    }
-
-    bool Lexer::is_valid() const {
-        return peek(0) != '\0';
+        return create_invalid_token();
     }
 
     TokenLexeme Lexer::create_token(const TokenType type, u64 length) {
         TokenLexeme token;
         token.type = type;
-        token.span.line = line;
-        token.span.column = column;
+        token.span.line = line_;
+        token.span.column = column_;
 
         if (token_has_value(type)) {
-            const u64 begin = index;
-            const std::string_view view = source;
+            const u64 begin = pos_;
+            const std::string_view view = source_;
             const std::string_view token_literal = view.substr(begin, length);
-            const u64 tok_lit_id = ctx->string_table.add(token_literal);
+            const u64 tok_lit_id = ctx_->string_table.add(token_literal);
             token.literal_id = tok_lit_id;
         }
 
-        index += length;
-        column += length;
+        pos_ += length;
+        column_ += length;
 
         return token;
     }
 
+    TokenLexeme Lexer::create_keyword_token(const u64 length) {
+        const u64 begin = pos_;
+        const std::string_view source_view = source_;
+        const std::string_view token_view = source_view.substr(begin, length);
+
+        TokenLexeme out;
+        out.type = identify_keyword(token_view);
+        if (out.type == TokenType::IDENTIFIER) {
+            out.literal_id = ctx_->string_table.add(token_view);
+        }
+
+        pos_ += length;
+        column_ += length;
+
+        return out;
+    }
+
+    TokenLexeme Lexer::create_end_token() {
+        TokenLexeme out;
+        out.type = TokenType::END;
+        return out;
+    }
+
+    TokenLexeme Lexer::create_invalid_token() {
+        TokenLexeme out;
+        out.type = TokenType::NONE;
+        return out;
+    }
+
     void Lexer::newline() {
-        line++;
-        column = 0;
+        line_++;
+        column_ = 0;
+    }
+
+    void Lexer::consume_singleline_comment() {
+        u64 i = 0;
+        char c = peek(i);
+        while (!is_newline(c)) {
+            i++;
+            c = peek(i);
+        }
+        pos_ += i;
+    }
+
+    void Lexer::consume_multiline_comment() {
+        u64 i = 0;
+        while (has_next(i)) {
+            char c = peek(i);
+            i++;
+            if (c == '*') {
+                c = peek(i);
+                i++;
+                if (c == '/') {
+                    break;
+                }
+            }
+        }
+        pos_ += i;
     }
 
 } /* solara */

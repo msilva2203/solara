@@ -5,25 +5,31 @@
 #pragma once
 
 #include "common.h"
+#include "solara.h"
+
+#include <unordered_map>
+#include <string>
 
 namespace solara {
     
-    enum class TokenType {
+    enum class TokenType : u16 {
         NONE = 0,
 
         IDENTIFIER,
 
         // keywords
-        BREAK,
-        CONST,
-        CONTINUE,
-        DEFAULT,
-        ELSE,
-        FOR,
-        IF,
-        RETURN,
-        STRUCT,
-        SWITCH,
+        KW_BREAK,
+        KW_CONST,
+        KW_CONTINUE,
+        KW_DEFAULT,
+        KW_ELSE,
+        KW_FOR,
+        KW_IF,
+        KW_RETURN,
+        KW_STRUCT,
+        KW_SWITCH,
+        KW_PUB,
+        KW_MODULE,
 
         // literals
         LIT_INT,
@@ -63,7 +69,12 @@ namespace solara {
         RBRACE,
         COMMA,
         PERIOD,
-        SEMICOLON
+        COLON,
+        SEMICOLON,
+
+        END,
+
+        MAX
     };
 
     struct TokenSourceSpan {
@@ -75,9 +86,22 @@ namespace solara {
         u64 literal_id;
         TokenSourceSpan span;
 
-        void print();
+        bool is_valid() const;
+    };
+
+    struct TokenMetadata {
+        TokenType type_;
+        std::string_view name_;
+        std::string_view source_name_;
     };
 
     bool token_has_value(const TokenType type);
+    TokenType identify_keyword(const std::string_view string);
+
+    void print_token(CompilerContext* ctx, const TokenLexeme& token);
+
+#if 0
+    extern std::unordered_map<std::string, TokenType> keyword_table;
+#endif
 
 }

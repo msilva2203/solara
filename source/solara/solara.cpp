@@ -8,6 +8,7 @@
 #include "solara.h"
 #include "lexer.h"
 #include "stringtable.h"
+#include "parser.h"
 
 #include <iostream>
 
@@ -58,12 +59,15 @@ namespace solara {
 
         std::cout << "SOLARA: " << settings.input_file << " outputing to " << settings.output_file << std::endl;
 
-        solara::Lexer lexer(&ctx, settings.input_file);
-
-        while (lexer.is_valid()) {
-            auto lexeme = lexer.get_next_token();
-            lexeme.print();
+        Lexer lexer(&ctx);
+        lexer.init(settings.input_file);
+        while (lexer.has_next()) {
+            auto tok = lexer.next_token();
+            print_token(&ctx, tok);
         }
+
+        Parser parser(&ctx);
+        parser.init(settings.input_file);
     }
 
 } /* solara */

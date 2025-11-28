@@ -15,22 +15,29 @@ namespace solara {
 
     class Lexer {
     public:
-        Lexer(CompilerContext* in_ctx, const std::filesystem::path& path);
+        Lexer(CompilerContext* ctx);
 
-        TokenLexeme get_next_token();
-        char peek(u64 offset) const;
-        bool is_valid() const;
+        void init(const std::filesystem::path& path);
+        TokenLexeme next_token();
+        char peek(const u32 offset = 0) const;
+        bool has_next(const u32 offset = 0) const;
 
     protected:
+        TokenLexeme tokenize();
         TokenLexeme create_token(const TokenType type, u64 length);
+        TokenLexeme create_keyword_token(const u64 length);
+        TokenLexeme create_end_token();
+        TokenLexeme create_invalid_token();
         void newline();
+        void consume_singleline_comment();
+        void consume_multiline_comment();
 
     private:
-        CompilerContext* ctx;
-        std::string source;
-        u64 index = 0;
-        u64 column = 0;
-        u64 line = 0;
+        CompilerContext* ctx_;
+        std::string source_;
+        u64 pos_ = 0;
+        u64 column_ = 0;
+        u64 line_ = 0;
         
     };
 
