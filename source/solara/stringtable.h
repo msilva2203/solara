@@ -11,9 +11,14 @@
 #include "common.h"
 
 namespace solara {
+
+    // forward declarations
+    struct CompilerContext;
     
     class StringTable {
     public:
+        StringTable(CompilerContext* ctx);
+
         u64 add(const std::string_view string);
         u64 get_index(const std::string_view string);
         std::string_view get_string(const u64 index);
@@ -22,6 +27,7 @@ namespace solara {
         bool is_valid_string(const std::string_view string);
 
     private:
+        CompilerContext* ctx_;
         std::vector<std::string> strings;
         std::unordered_map<std::string_view, u64> table;
     };

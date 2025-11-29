@@ -3,10 +3,17 @@
  */
 
 #include "stringtable.h"
+#include "solara.h"
 
 #include <iostream>
+#include <sstream>
 
 namespace solara {
+
+    StringTable::StringTable(CompilerContext* ctx) {
+        assert(ctx != nullptr);
+        ctx_ = ctx;
+    }
 
     u64 StringTable::add(const std::string_view string) {
         auto it = table.find(string);
@@ -18,7 +25,12 @@ namespace solara {
         strings.emplace_back(string);
         table.emplace(string, index);
 
-        std::cout << "[" << index << "]: " << string << std::endl;
+        std::ostringstream ss;
+        ss << "Added new element to String Table at " << index << ": \"" << string << "\".";
+        ctx_->logger_.log(
+            DEBUG,
+            ss.str()
+        );
 
         return index;
     }

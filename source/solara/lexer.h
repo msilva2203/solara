@@ -28,6 +28,7 @@ namespace solara {
         TokenLexeme create_keyword_token(const u64 length);
         TokenLexeme create_end_token();
         TokenLexeme create_invalid_token();
+        void advance(const u32 amount);
         void newline();
         void consume_singleline_comment();
         void consume_multiline_comment();

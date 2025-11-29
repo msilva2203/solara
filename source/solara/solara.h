@@ -9,19 +9,32 @@
 
 #include "common.h"
 #include "stringtable.h"
+#include "log.h"
 
 #include <string>
 
 namespace solara {
 
     struct CompilerSettings {
-        std::string input_file = "";
-        std::string output_file = "";
+        std::string input_file_ = "";
+        std::string output_file_ = "";
+        std::filesystem::path log_output_file_;
+
+        CompilerSettings() {
+            log_output_file_ = "logs/solara.log";
+        }
     };
 
     struct CompilerContext {
-        CompilerSettings settings;
-        StringTable string_table;
+        CompilerSettings settings_;
+        StringTable string_table_;
+        Logger logger_;
+
+        CompilerContext(const CompilerSettings& settings)
+            : settings_(settings)
+            , string_table_(this)
+            , logger_(settings.log_output_file_)
+        {}
     };
 
     /**

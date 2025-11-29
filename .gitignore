@@ -44,3 +44,9 @@
 binaries/
 build/
 intermediate/
+logs/
+*.log
+
+# visual studio
+.vs/
+.vscode/

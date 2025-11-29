@@ -56,7 +56,7 @@ namespace solara {
         match(TokenType::SEMICOLON);
 
         if (name.type == TokenType::IDENTIFIER) {
-            std::cout << ctx_->string_table.get_string(name.literal_id) << std::endl;
+            std::cout << ctx_->string_table_.get_string(name.literal_id) << std::endl;
         }
     }
 

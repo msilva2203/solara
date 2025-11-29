@@ -17,7 +17,10 @@ namespace solara {
      */
     constexpr std::array<TokenMetadata, static_cast<i32>(TokenType::MAX)> token_metadata_table = {{
         { TokenType::NONE, "NONE", "" },
+
         { TokenType::IDENTIFIER, "IDENTIFIER", "" },
+
+        // keywords
         { TokenType::KW_BREAK, "BREAK", "break" },
         { TokenType::KW_CONST, "CONST", "const" },
         { TokenType::KW_CONTINUE, "CONTINUE", "continue" },
@@ -30,9 +33,13 @@ namespace solara {
         { TokenType::KW_SWITCH, "SWITCH", "switch" },
         { TokenType::KW_PUB, "PUB", "pub" },
         { TokenType::KW_MODULE, "MODULE", "module" },
+
+        // literals
         { TokenType::LIT_INT, "LIT_INT", "" },
         { TokenType::LIT_FLOAT, "LIT_FLOAT", "" },
         { TokenType::LIT_STRING, "LIT_STRING", "" },
+
+        // operators
         { TokenType::PLUS, "PLUS", "+" },
         { TokenType::MINUS, "MINUS", "-" },
         { TokenType::STAR, "STAR", "*" },
@@ -55,6 +62,8 @@ namespace solara {
         { TokenType::NEQ, "NEQ", "!=" },
         { TokenType::LE, "LE", "<=" },
         { TokenType::GE, "GE", ">=" },
+
+        // punctuation
         { TokenType::LPAR, "LPAR", "(" },
         { TokenType::RPAR, "RPAR", ")" },
         { TokenType::LSQ, "LSQ", "[" },
@@ -65,6 +74,7 @@ namespace solara {
         { TokenType::PERIOD, "PERIOD", "." },
         { TokenType::COLON, "COLON", ":" },
         { TokenType::SEMICOLON, "SEMICOLON", ";" },
+
         { TokenType::END, "EOF", "" },
     }};
 
@@ -74,7 +84,6 @@ namespace solara {
      * @returns The metadata of the token type
      */
     constexpr const TokenMetadata& get_token_metadata(const TokenType type) {
-        assert(static_cast<i32>(type) < token_metadata_table.size());
         return token_metadata_table[static_cast<i32>(type)];
     }
 
@@ -112,7 +121,7 @@ namespace solara {
 
     static void print_value_token(CompilerContext* ctx, const TokenLexeme& token) {
         TokenMetadata meta = get_token_metadata(token.type);
-        std::cout << meta.name_ << "(" << ctx->string_table.get_string(token.literal_id) << ")" << std::endl;
+        std::cout << meta.name_ << "(" << ctx->string_table_.get_string(token.literal_id) << ")" << std::endl;
     }
 
     static void print_nonvalue_token(CompilerContext* ctx, const TokenLexeme& token) {

@@ -376,7 +376,7 @@ namespace solara {
             const u64 begin = pos_;
             const std::string_view view = source_;
             const std::string_view token_literal = view.substr(begin, length);
-            const u64 tok_lit_id = ctx_->string_table.add(token_literal);
+            const u64 tok_lit_id = ctx_->string_table_.add(token_literal);
             token.literal_id = tok_lit_id;
         }
 
@@ -394,7 +394,7 @@ namespace solara {
         TokenLexeme out;
         out.type = identify_keyword(token_view);
         if (out.type == TokenType::IDENTIFIER) {
-            out.literal_id = ctx_->string_table.add(token_view);
+            out.literal_id = ctx_->string_table_.add(token_view);
         }
 
         pos_ += length;
@@ -413,6 +413,11 @@ namespace solara {
         TokenLexeme out;
         out.type = TokenType::NONE;
         return out;
+    }
+
+    void Lexer::advance(const u32 amount) {
+        pos_ += amount;
+        column_ += amount;
     }
 
     void Lexer::newline() {

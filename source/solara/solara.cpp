@@ -42,10 +42,10 @@ namespace solara {
 
             switch (parse_state) {
                 case ParseState::InputFile:
-                    out_settings.input_file = arg;
+                    out_settings.input_file_ = arg;
                     break;
                 case ParseState::OutputFile:
-                    out_settings.output_file = arg;
+                    out_settings.output_file_ = arg;
                     break;
                 default:
                     break;
@@ -54,20 +54,23 @@ namespace solara {
     }
 
     void init(const CompilerSettings& settings) {
-        CompilerContext ctx;
-        ctx.settings = settings;
+        CompilerContext ctx(settings);
 
-        std::cout << "SOLARA: " << settings.input_file << " outputing to " << settings.output_file << std::endl;
+        ctx.logger_.log(
+            INFO,
+            "Solara Context has been initialized."
+        );
+        std::cout << "SOLARA: " << settings.input_file_ << " outputting to " << settings.output_file_ << std::endl;
 
         Lexer lexer(&ctx);
-        lexer.init(settings.input_file);
+        lexer.init(settings.input_file_);
         while (lexer.has_next()) {
             auto tok = lexer.next_token();
             print_token(&ctx, tok);
         }
 
         Parser parser(&ctx);
-        parser.init(settings.input_file);
+        parser.init(settings.input_file_);
     }
 
 } /* solara */

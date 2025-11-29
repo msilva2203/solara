@@ -22,6 +22,8 @@ add_executable(
     source/solara/ast.cpp
     source/solara/parser.h
     source/solara/parser.cpp
+    source/solara/log.h
+    source/solara/log.cpp
 )
 
 target_compile_features(solara PUBLIC cxx_std_20)
