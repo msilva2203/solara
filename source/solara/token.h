@@ -37,28 +37,28 @@ namespace solara {
         LIT_STRING,
 
         // operators
-        PLUS,
-        MINUS,
-        STAR,
-        DIV,
-        MOD,
-        PLUS_ASSIGN,
-        MINUS_ASSIGN,
-        STAR_ASSIGN,
-        DIV_ASSIGN,
-        MOD_ASSIGN,
-        AND,
-        OR,
-        INC,
-        DEC,
-        EQ,
-        LT,
-        GT,
-        ASSIGN,
-        NOT,
-        NEQ,
-        LE,
-        GE,
+        OP_PLUS,
+        OP_MINUS,
+        OP_STAR,
+        OP_DIV,
+        OP_MOD,
+        OP_PLUS_ASSIGN,
+        OP_MINUS_ASSIGN,
+        OP_STAR_ASSIGN,
+        OP_DIV_ASSIGN,
+        OP_MOD_ASSIGN,
+        OP_AND,
+        OP_OR,
+        OP_INC,
+        OP_DEC,
+        OP_EQ,
+        OP_LT,
+        OP_GT,
+        OP_ASSIGN,
+        OP_NOT,
+        OP_NEQ,
+        OP_LE,
+        OP_GE,
 
         // punctuation
         LPAR,
@@ -95,6 +95,9 @@ namespace solara {
         std::string_view source_name_;
     };
 
+    bool token_is_keyword(const TokenType type);
+    bool token_is_literal(const TokenType type);
+    bool token_is_operator(const TokenType type);
     bool token_has_value(const TokenType type);
     TokenType identify_keyword(const std::string_view string);
 

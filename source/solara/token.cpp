@@ -40,28 +40,28 @@ namespace solara {
         { TokenType::LIT_STRING, "LIT_STRING", "" },
 
         // operators
-        { TokenType::PLUS, "PLUS", "+" },
-        { TokenType::MINUS, "MINUS", "-" },
-        { TokenType::STAR, "STAR", "*" },
-        { TokenType::DIV, "DIV", "/" },
-        { TokenType::MOD, "MOD", "%" },
-        { TokenType::PLUS_ASSIGN, "PLUS_ASSIGN", "+=" },
-        { TokenType::MINUS_ASSIGN, "MINUS_ASSIGN", "-=" },
-        { TokenType::STAR_ASSIGN, "STAR_ASSIGN", "*=" },
-        { TokenType::DIV_ASSIGN, "DIV_ASSIGN", "/=" },
-        { TokenType::MOD_ASSIGN, "MOD_ASSIGN", "%=" },
-        { TokenType::AND, "AND", "&&" },
-        { TokenType::OR, "OR", "||" },
-        { TokenType::INC, "INC", "++" },
-        { TokenType::DEC, "DEC", "--" },
-        { TokenType::EQ, "EQ", "==" },
-        { TokenType::LT, "LT", "<" },
-        { TokenType::GT, "GT", ">" },
-        { TokenType::ASSIGN, "ASSIGN", "=" },
-        { TokenType::NOT, "NOT", "!" },
-        { TokenType::NEQ, "NEQ", "!=" },
-        { TokenType::LE, "LE", "<=" },
-        { TokenType::GE, "GE", ">=" },
+        { TokenType::OP_PLUS, "PLUS", "+" },
+        { TokenType::OP_MINUS, "MINUS", "-" },
+        { TokenType::OP_STAR, "STAR", "*" },
+        { TokenType::OP_DIV, "DIV", "/" },
+        { TokenType::OP_MOD, "MOD", "%" },
+        { TokenType::OP_PLUS_ASSIGN, "PLUS_ASSIGN", "+=" },
+        { TokenType::OP_MINUS_ASSIGN, "MINUS_ASSIGN", "-=" },
+        { TokenType::OP_STAR_ASSIGN, "STAR_ASSIGN", "*=" },
+        { TokenType::OP_DIV_ASSIGN, "DIV_ASSIGN", "/=" },
+        { TokenType::OP_MOD_ASSIGN, "MOD_ASSIGN", "%=" },
+        { TokenType::OP_AND, "AND", "&&" },
+        { TokenType::OP_OR, "OR", "||" },
+        { TokenType::OP_INC, "INC", "++" },
+        { TokenType::OP_DEC, "DEC", "--" },
+        { TokenType::OP_EQ, "EQ", "==" },
+        { TokenType::OP_LT, "LT", "<" },
+        { TokenType::OP_GT, "GT", ">" },
+        { TokenType::OP_ASSIGN, "ASSIGN", "=" },
+        { TokenType::OP_NOT, "NOT", "!" },
+        { TokenType::OP_NEQ, "NEQ", "!=" },
+        { TokenType::OP_LE, "LE", "<=" },
+        { TokenType::OP_GE, "GE", ">=" },
 
         // punctuation
         { TokenType::LPAR, "LPAR", "(" },
@@ -89,6 +89,67 @@ namespace solara {
 
     bool TokenLexeme::is_valid() const {
         return type != TokenType::NONE;
+    }
+
+    bool token_is_keyword(const TokenType type) {
+        switch (type) {
+            case TokenType::KW_BREAK:
+            case TokenType::KW_CONST:
+            case TokenType::KW_CONTINUE:
+            case TokenType::KW_DEFAULT:
+            case TokenType::KW_ELSE:
+            case TokenType::KW_FOR:
+            case TokenType::KW_IF:
+            case TokenType::KW_MODULE:
+            case TokenType::KW_PUB:
+            case TokenType::KW_RETURN:
+            case TokenType::KW_STRUCT:
+            case TokenType::KW_SWITCH:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    bool token_is_literal(const TokenType type) {
+        switch (type) {
+            case TokenType::LIT_INT:
+            case TokenType::LIT_FLOAT:
+            case TokenType::LIT_STRING:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    bool token_is_operator(const TokenType type) {
+        switch (type) {
+            case TokenType::OP_AND:
+            case TokenType::OP_ASSIGN:
+            case TokenType::OP_DEC:
+            case TokenType::OP_DIV:
+            case TokenType::OP_DIV_ASSIGN:
+            case TokenType::OP_EQ:
+            case TokenType::OP_GE:
+            case TokenType::OP_GT:
+            case TokenType::OP_INC:
+            case TokenType::OP_LE:
+            case TokenType::OP_LT:
+            case TokenType::OP_MINUS:
+            case TokenType::OP_MINUS_ASSIGN:
+            case TokenType::OP_MOD:
+            case TokenType::OP_MOD_ASSIGN:
+            case TokenType::OP_NEQ:
+            case TokenType::OP_NOT:
+            case TokenType::OP_OR:
+            case TokenType::OP_PLUS:
+            case TokenType::OP_PLUS_ASSIGN:
+            case TokenType::OP_STAR:
+            case TokenType::OP_STAR_ASSIGN:
+                return true;
+            default:
+                return false;
+        }
     }
 
     bool token_has_value(const TokenType type) {

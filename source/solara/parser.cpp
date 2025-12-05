@@ -58,6 +58,35 @@ namespace solara {
         if (name.type == TokenType::IDENTIFIER) {
             std::cout << ctx_->string_table_.get_string(name.literal_id) << std::endl;
         }
+
+        parse_program();
+    }
+
+    void Parser::parse_program() {
+
+    }
+
+    void Parser::parse_function(const bool pub) {
+
+    }
+
+    void Parser::parse_function_params() {
+
+    }
+
+    void Parser::parse_function_body() {
+
+    }
+
+    void Parser::parse_statement() {
+
+    }
+
+    /**
+     * @see Pratt Parsing
+     */
+    void Parser::parse_expression(const u08 rbp) {
+
     }
 
 } /* solara */

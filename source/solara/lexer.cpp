@@ -202,7 +202,7 @@ namespace solara {
         if (c == '/') {
             c = peek(1);
             if (c == '=') {
-                return create_token(TokenType::DIV_ASSIGN, 2);
+                return create_token(TokenType::OP_DIV_ASSIGN, 2);
             } else if (c == '/') {
                 pos_ += 2;
                 consume_singleline_comment();
@@ -212,47 +212,47 @@ namespace solara {
                 consume_multiline_comment();
                 return create_invalid_token();
             } else {
-                return create_token(TokenType::DIV, 1);
+                return create_token(TokenType::OP_DIV, 1);
             }
         }
 
         if (c == '*') {
             c = peek(1);
             if (c == '=') {
-                return create_token(TokenType::STAR_ASSIGN, 2);
+                return create_token(TokenType::OP_STAR_ASSIGN, 2);
             } else {
-                return create_token(TokenType::STAR, 1);
+                return create_token(TokenType::OP_STAR, 1);
             }
         }
 
         if (c == '+') {
             c = peek(1);
             if (c == '=') {
-                return create_token(TokenType::PLUS_ASSIGN, 2);
+                return create_token(TokenType::OP_PLUS_ASSIGN, 2);
             } else if (c == '+') {
-                return create_token(TokenType::INC, 2);
+                return create_token(TokenType::OP_INC, 2);
             } else {
-                return create_token(TokenType::PLUS, 1);
+                return create_token(TokenType::OP_PLUS, 1);
             }
         }
 
         if (c == '-') {
             c = peek(1);
             if (c == '=') {
-                return create_token(TokenType::MINUS_ASSIGN, 2);
+                return create_token(TokenType::OP_MINUS_ASSIGN, 2);
             } else if (c == '-') {
-                return create_token(TokenType::DEC, 2);
+                return create_token(TokenType::OP_DEC, 2);
             } else {
-                return create_token(TokenType::MINUS, 1);
+                return create_token(TokenType::OP_MINUS, 1);
             }
         }
 
         if (c == '%') {
             c = peek(1);
             if (c == '=') {
-                return create_token(TokenType::MOD_ASSIGN, 2);
+                return create_token(TokenType::OP_MOD_ASSIGN, 2);
             } else {
-                return create_token(TokenType::MOD, 1);
+                return create_token(TokenType::OP_MOD, 1);
             }
         }
 
@@ -261,7 +261,7 @@ namespace solara {
             if (c == '=') {
                 return create_token(TokenType::NONE, 2);
             } else if (c == '&') {
-                return create_token(TokenType::AND, 2);
+                return create_token(TokenType::OP_AND, 2);
             } else {
                 return create_token(TokenType::NONE, 1);
             }
@@ -272,7 +272,7 @@ namespace solara {
             if (c == '=') {
                 return create_token(TokenType::NONE, 2);
             } else if (c == '|') {
-                return create_token(TokenType::OR, 2);
+                return create_token(TokenType::OP_OR, 2);
             } else {
                 return create_token(TokenType::NONE, 1);
             }
@@ -281,16 +281,16 @@ namespace solara {
         if (c == '=') {
             c = peek(1);
             if (c == '=') {
-                return create_token(TokenType::EQ, 2);
+                return create_token(TokenType::OP_EQ, 2);
             } else {
-                return create_token(TokenType::ASSIGN, 1);
+                return create_token(TokenType::OP_ASSIGN, 1);
             }
         }
 
         if (c == '<') {
             c = peek(1);
             if (c == '=') {
-                return create_token(TokenType::LE, 2);
+                return create_token(TokenType::OP_LE, 2);
             } else if (c == '<') {
                 c = peek(2);
                 if (c == '=') {
@@ -299,14 +299,14 @@ namespace solara {
                     return create_token(TokenType::NONE, 2);
                 }
             } else {
-                return create_token(TokenType::LT, 1);
+                return create_token(TokenType::OP_LT, 1);
             }
         }
 
         if (c == '>') {
             c = peek(1);
             if (c == '=') {
-                return create_token(TokenType::GE, 2);
+                return create_token(TokenType::OP_GE, 2);
             } else if (c == '>') {
                 c = peek(2);
                 if (c == '=') {
@@ -315,16 +315,16 @@ namespace solara {
                     return create_token(TokenType::NONE, 2);
                 }
             } else {
-                return create_token(TokenType::GT, 1);
+                return create_token(TokenType::OP_GT, 1);
             }
         }
 
         if (c == '!') {
             c = peek(1);
             if (c == '=') {
-                return create_token(TokenType::NEQ, 2);
+                return create_token(TokenType::OP_NEQ, 2);
             } else {
-                return create_token(TokenType::NOT, 1);
+                return create_token(TokenType::OP_NOT, 1);
             }
         }
 

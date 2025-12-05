@@ -50,3 +50,6 @@ logs/
 # visual studio
 .vs/
 .vscode/
+
+# user
+references/

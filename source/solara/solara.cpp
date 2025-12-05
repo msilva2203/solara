@@ -9,6 +9,7 @@
 #include "lexer.h"
 #include "stringtable.h"
 #include "parser.h"
+#include "ast.h"
 
 #include <iostream>
 
@@ -60,8 +61,21 @@ namespace solara {
             INFO,
             "Solara Context has been initialized."
         );
-        std::cout << "SOLARA: " << settings.input_file_ << " outputting to " << settings.output_file_ << std::endl;
 
+        auto expr1 = make_syntax_node<LiteralExprNode>();
+        auto expr2 = make_syntax_node<LiteralExprNode>();
+        auto bin1 = make_syntax_node<BinaryExprNode>(BinaryOperation::SUB, expr1, expr2);
+        auto expr3 = make_syntax_node<LiteralExprNode>();
+        auto ast = make_syntax_node<BinaryExprNode>(BinaryOperation::ADD, bin1, expr3);
+        ast->dump();
+
+        delete expr1;
+        delete expr2;
+        delete bin1;
+        delete expr3;
+        delete ast;
+
+#if 0
         Lexer lexer(&ctx);
         lexer.init(settings.input_file_);
         while (lexer.has_next()) {
@@ -71,6 +85,7 @@ namespace solara {
 
         Parser parser(&ctx);
         parser.init(settings.input_file_);
+#endif
     }
 
 } /* solara */
